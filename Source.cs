@@ -123,19 +123,13 @@ namespace AlgorithmsDataStructures
 
         public HashTable()
         {
-            sze = 17;
+            sze = 20000;
             slots = new T[sze];
             for (int i = 0; i < sze; i++) slots[i] = default;
         }
 
         public int HashFun(T value)
         {
-            if (typeof(T) == typeof(string))
-            {
-                int sum = 0;
-                Array.ForEach((value as string).ToCharArray(), delegate (char i) { sum += i; });
-                return sum % sze;
-            }
             return (value.GetHashCode() & 0x7FFFFFFF) % sze;
         }
 
