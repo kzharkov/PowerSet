@@ -22,12 +22,12 @@ namespace AlgorithmsDataStructures
 
         public void Put(T value)
         {
-            int slot = SeekSlot(value);
-            if (slot != -1 && slots[slot] == null)
+            int slot = HashFun(value);
+            if (slots[slot] == null)
             {
-                slots[slot] = value;
                 size++;
             }
+            slots[slot] = value;
         }
 
         public bool Get(T value)
@@ -41,9 +41,9 @@ namespace AlgorithmsDataStructures
 
         public bool Remove(T value)
         {
-            if (Find(value) != -1)
+            if (Get(value))
             {
-                slots[SeekSlot(value)] = default;
+                slots[HashFun(value)] = default;
                 size--;
                 return true;
             }
@@ -119,48 +119,32 @@ namespace AlgorithmsDataStructures
     public class HashTable<T>
     {
         public int sze;
-        public int step;
         public T[] slots;
 
         public HashTable()
         {
-            sze = 20000;
-            step = 3;
+            sze = 17;
             slots = new T[sze];
             for (int i = 0; i < sze; i++) slots[i] = default;
         }
 
         public int HashFun(T value)
         {
-            return (value.GetHashCode() & 0x7FFFFFFF) % sze;
-        }
-
-        public int SeekSlot(T value)
-        {
-            int slot = HashFun(value);
-            int startSlot = slot;
-            while (slots[slot] != null && !slots[slot].Equals(value))
+            if (typeof(T) == typeof(string))
             {
-                slot += step;
-                slot %= sze;
-                if (slot == startSlot) return -1;
+                int sum = 0;
+                Array.ForEach((value as string).ToCharArray(), delegate (char i) { sum += i; });
+                return sum % sze;
             }
-            return slot;
+            return (value.GetHashCode() & 0x7FFFFFFF) % sze;
         }
 
         public int Find(T value)
         {
             int slot = HashFun(value);
-            int startSlot = slot;
-            while (slots[slot] != null)
+            if (slots[slot] != null && slots[slot].Equals(value))
             {
-                if (slots[slot].Equals(value))
-                {
-                    return slot;
-                }
-                slot += step;
-                slot %= sze;
-                if (slot == startSlot) break;
+                return slot;
             }
             return -1;
         }
